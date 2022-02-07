@@ -28,6 +28,8 @@ setup(
         'attr',
         'fastapi',
         'pydantic',
+        'stac-fastapi.api',
+        'stac-fastapi.extensions',
         'stac-fastapi.types',
     ],
     extras_require={
