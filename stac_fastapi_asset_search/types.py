@@ -209,29 +209,32 @@ class AssetLinks(BaseLinks):
 
     def self(self) -> Dict[str, Any]:
         """Create the `self` link."""
+        url = f"collections/{self.collection_id}/items/{self.item_id}/assets/{self.asset_id}" if self.collection_id else f"asset/search/?ids={self.asset_id}"
         return dict(
             rel=Relations.self,
             type=MimeTypes.geojson,
             href=urljoin(
                 self.base_url,
-                f"collections/{self.collection_id}/items/{self.item_id}/assets/{self.asset_id}",
+                url,
             ),
         )
 
     def parent(self) -> Dict[str, Any]:
         """Create the `parent` link."""
+        url = f"collections/{self.collection_id}/items/{self.item_id}" if self.collection_id else f"search/?ids={self.item_id}"
         return dict(
             rel=Relations.parent,
             type=MimeTypes.json,
-            href=urljoin(self.base_url, f"collections/{self.collection_id}/items/{self.item_id}"),
+            href=urljoin(self.base_url, url),
         )
 
     def item(self) -> Dict[str, Any]:
         """Create the `item` link."""
+        url = f"collections/{self.collection_id}/items/{self.item_id}" if self.collection_id else f"search/?ids={self.item_id}"
         return dict(
             rel=Relations.item,
             type=MimeTypes.json,
-            href=urljoin(self.base_url, f"collections/{self.collection_id}/items/{self.item_id}"),
+            href=urljoin(self.base_url, url),
         )
 
     def create_links(self) -> List[Dict[str, Any]]:
