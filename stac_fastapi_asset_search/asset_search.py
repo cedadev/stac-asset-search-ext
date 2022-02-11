@@ -109,7 +109,7 @@ class AssetSearchExtension(ApiExtension):
         """
         self.router.add_api_route(
             name="Get Assets",
-            path="/collection/{collection_id}/items/{item_id}/assets",
+            path="/collections/{collection_id}/items/{item_id}/assets",
             response_model=AssetCollection
             if self.settings and self.settings.enable_response_models
             else None,
