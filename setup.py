@@ -28,6 +28,7 @@ setup(
         'attr',
         'fastapi',
         'pydantic',
+        'typing-extensions',
         'stac-fastapi.api',
         'stac-fastapi.extensions',
         'stac-fastapi.types',

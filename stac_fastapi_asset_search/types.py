@@ -13,7 +13,8 @@ from geojson_pydantic.geometries import (
 
 from stac_fastapi.types.search import APIRequest, str2list
 
-from typing import Any, Dict, List, Optional, Union, TypedDict
+from typing import Any, Dict, List, Optional, Union
+from typing_extensions import TypedDict
 
 from pydantic import BaseModel
 
