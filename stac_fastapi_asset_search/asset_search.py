@@ -7,6 +7,7 @@ __copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
 __license__ = 'BSD - see LICENSE file in top-level package directory'
 __contact__ = 'rhys.r.evans@stfc.ac.uk'
 
+from distutils import extension
 from typing import Callable, List, Union, Type
 
 import attr
@@ -49,6 +50,13 @@ class AssetSearchExtension(ApiExtension):
     )
     router: APIRouter = attr.ib(factory=APIRouter)
     response_class: Type[Response] = attr.ib(default=JSONResponse)
+    extensions: List[ApiExtension] = attr.ib(default=attr.Factory(list))
+    asset_search_get_request_model: Type[AssetSearchGetRequest] = attr.ib(
+        default=AssetSearchGetRequest
+    )
+    asset_search_post_request_model: Type[AssetSearchPostRequest] = attr.ib(
+        default=AssetSearchPostRequest
+    )
 
     def _create_endpoint(
         self,
@@ -81,7 +89,7 @@ class AssetSearchExtension(ApiExtension):
             response_model_exclude_unset=True,
             response_model_exclude_none=True,
             methods=["GET"],
-            endpoint=self._create_endpoint(self.client.get_asset_search, AssetSearchGetRequest),
+            endpoint=self._create_endpoint(self.client.get_asset_search, self.asset_search_get_request_model),
         )
 
     def register_post_asset_search(self):
@@ -99,7 +107,7 @@ class AssetSearchExtension(ApiExtension):
             response_model_exclude_unset=True,
             response_model_exclude_none=True,
             methods=["POST"],
-            endpoint=self._create_endpoint(self.client.post_asset_search, AssetSearchPostRequest),
+            endpoint=self._create_endpoint(self.client.post_asset_search, self.asset_search_post_request_model),
         )
     
     def register_get_assets(self):

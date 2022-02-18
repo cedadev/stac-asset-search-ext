@@ -5,8 +5,9 @@ from datetime import datetime
 from typing import List, Optional, Union
 
 import attr
-from .types import AssetCollection, AssetSearchPostRequest
+from .types import AssetCollection, AssetSearchPostRequest, AssetSearchGetRequest
 from stac_fastapi.types.extension import ApiExtension
+from stac_fastapi.api.models import create_request_model
 
 NumType = Union[float, int]
 
@@ -112,3 +113,27 @@ class AsyncBaseAssetSearchClient(abc.ABC):
             AssetCollection containing assets for given item.
         """
         ...
+
+
+def create_asset_search_get_request_model(
+    extensions, base_model: AssetSearchGetRequest = AssetSearchGetRequest
+):
+    """Wrap create_request_model to create the GET request model."""
+    return create_request_model(
+        "AssetSearchGetRequest",
+        base_model=base_model,
+        extensions=extensions,
+        request_type="GET",
+    )
+
+
+def create_asset_search_post_request_model(
+    extensions, base_model: AssetSearchPostRequest = AssetSearchPostRequest
+):
+    """Wrap create_request_model to create the POST request model."""
+    return create_request_model(
+        "AssetSearchPostRequest",
+        base_model=base_model,
+        extensions=extensions,
+        request_type="POST",
+    )
