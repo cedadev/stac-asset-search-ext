@@ -33,7 +33,7 @@ class Asset(TypedDict, total=False):
     stac_version: str
     stac_extensions: Optional[List[str]]
     id: str
-    item: Optional[str]
+    items: Optional[str]
     geometry: Dict[str, Any]
     bbox: List[NumType]
     properties: Dict[str, Any]
@@ -56,7 +56,7 @@ class AssetSearchGetRequest(APIRequest):
     """Base arguments for GET  Request."""
 
     ids: Optional[str] = attr.ib(default=None, converter=str2list)
-    item: Optional[str] = attr.ib(default=None)
+    items: Optional[str] = attr.ib(default=None)
     bbox: Optional[str] = attr.ib(default=None, converter=str2list)
     intersects: Optional[str] = attr.ib(default=None, converter=str2list)
     datetime: Optional[str] = attr.ib(default=None)
@@ -75,7 +75,7 @@ class AssetSearchPostRequest(BaseModel):
         Union[Point, MultiPoint, LineString, MultiLineString, Polygon, MultiPolygon]
     ]
     datetime: Optional[str]
-    role: Optional[str]
+    role: Optional[List[str]]
     limit: Optional[conint(gt=0, le=10000)] = 10
 
     @property
