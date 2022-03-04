@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import List, Optional, Union
 
 import attr
-from .types import AssetCollection, AssetSearchPostRequest, AssetSearchGetRequest
+from .types import Asset, AssetCollection, AssetSearchPostRequest, AssetSearchGetRequest
 from stac_fastapi.types.extension import ApiExtension
 from stac_fastapi.api.models import create_request_model
 
@@ -57,6 +57,24 @@ class BaseAssetSearchClient(abc.ABC):
             AssetCollection containing assets which match the search criteria.
         """
         ...
+    
+    @abc.abstractmethod
+    def get_assets(self, collection_id: str, item_id: str, **kwargs,) -> AssetCollection:
+        """item assets (GET).
+        Called with `GET /collection/{collection_id}/items/{item_id}/assets`.
+        Returns:
+            AssetCollection containing assets for given item.
+        """
+        ...
+    
+    @abc.abstractmethod
+    def get_asset(self, collection_id: str, item_id: str, asset_id: str, **kwargs,) -> Asset:
+        """asset (GET).
+        Called with `GET /collection/{collection_id}/items/{item_id}/assets/{asset_id}`.
+        Returns:
+            Asset containing asset for given id.
+        """
+        ...
 
 
 @attr.s  # type:ignore
@@ -106,11 +124,20 @@ class AsyncBaseAssetSearchClient(abc.ABC):
         ...
 
     @abc.abstractmethod
-    def get_assets(self, item_id: str, collection_id: str, **kwargs,) -> AssetCollection:
-        """asset search (GET).
+    def get_assets(self, collection_id: str, item_id: str, **kwargs,) -> AssetCollection:
+        """item assets (GET).
         Called with `GET /collection/{collection_id}/items/{item_id}/assets`.
         Returns:
             AssetCollection containing assets for given item.
+        """
+        ...
+    
+    @abc.abstractmethod
+    def get_asset(self, collection_id: str, item_id: str, asset_id: str, **kwargs,) -> Asset:
+        """asset (GET).
+        Called with `GET /collection/{collection_id}/items/{item_id}/assets/{asset_id}`.
+        Returns:
+            Asset containing asset for given id.
         """
         ...
 

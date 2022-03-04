@@ -193,8 +193,17 @@ class AssetSearchPostRequest(BaseModel):
 class GetAssetsRequest(APIRequest):
     """Base arguments for GET  Request."""
 
-    item_id: str = attr.ib()
     collection_id: str = attr.ib()
+    item_id: str = attr.ib()
+
+
+@attr.s
+class GetAssetRequest(APIRequest):
+    """Base arguments for GET  Request."""
+
+    collection_id: str = attr.ib()
+    item_id: str = attr.ib()
+    asset_id: str = attr.ib()
 
 
 @attr.s

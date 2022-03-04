@@ -20,7 +20,7 @@ from stac_fastapi.api.models import APIRequest
 from stac_fastapi.types.config import ApiSettings
 from stac_fastapi.api.routes import create_async_endpoint, create_sync_endpoint
 
-from .types import AssetCollection, AssetSearchGetRequest, AssetSearchPostRequest, GetAssetsRequest
+from .types import Asset, AssetCollection, AssetSearchGetRequest, AssetSearchPostRequest, GetAssetsRequest, GetAssetRequest
 from .client import BaseAssetSearchClient, AsyncBaseAssetSearchClient
 
 CONFORMANCE_CLASSES = [
@@ -127,9 +127,28 @@ class AssetSearchExtension(ApiExtension):
             methods=["GET"],
             endpoint=self._create_endpoint(self.client.get_assets, GetAssetsRequest),
         )
+    
+    def register_get_asset(self):
+        """Register asset search endpoint (GET /collection/{collection_id}/items/{item_id}/assets/{asset_id}).
+        Returns:
+            None
+        """
+        self.router.add_api_route(
+            name="Get Asset",
+            path="/collections/{collection_id}/items/{item_id}/assets/{asset_id}",
+            response_model=Asset
+            if self.settings and self.settings.enable_response_models
+            else None,
+            response_class=self.response_class,
+            response_model_exclude_unset=True,
+            response_model_exclude_none=True,
+            methods=["GET"],
+            endpoint=self._create_endpoint(self.client.get_asset, GetAssetRequest),
+        )
 
     def register(self, app: FastAPI) -> None:
         self.register_get_asset_search()
         self.register_post_asset_search()
         self.register_get_assets()
+        self.register_get_asset()
         app.include_router(self.router, tags=["Asset Search Extension"])
