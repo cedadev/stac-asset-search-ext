@@ -33,6 +33,12 @@ class Asset(TypedDict, total=False):
     stac_version: str
     stac_extensions: Optional[List[str]]
     id: str
+    size: int
+    media_type: str
+    filename: str
+    modified_time: str
+    magic_number: str
+    extension: str
     items: Optional[str]
     geometry: Dict[str, Any]
     bbox: List[NumType]
