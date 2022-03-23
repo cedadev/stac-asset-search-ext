@@ -62,11 +62,11 @@ class AssetSearchGetRequest(APIRequest):
     """Base arguments for GET  Request."""
 
     ids: Optional[str] = attr.ib(default=None, converter=str2list)
-    items: Optional[str] = attr.ib(default=None)
+    items: Optional[List[str]] = attr.ib(default=None)
     bbox: Optional[str] = attr.ib(default=None, converter=str2list)
     intersects: Optional[str] = attr.ib(default=None, converter=str2list)
     datetime: Optional[str] = attr.ib(default=None)
-    role: Optional[str] = attr.ib(default=None)
+    role: Optional[List[str]] = attr.ib(default=None)
     limit: Optional[int] = attr.ib(default=10)
 
 
