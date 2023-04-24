@@ -1,31 +1,35 @@
 # encoding: utf-8
 """Asset Search Extension"""
 
-__author__ = 'Rhys Evans'
-__date__ = '27 Jan 2022'
-__copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
-__license__ = 'BSD - see LICENSE file in top-level package directory'
-__contact__ = 'rhys.r.evans@stfc.ac.uk'
+__author__ = "Rhys Evans"
+__date__ = "27 Jan 2022"
+__copyright__ = "Copyright 2018 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "rhys.r.evans@stfc.ac.uk"
 
 from distutils import extension
-from typing import Callable, List, Union, Type
+from typing import Callable, List, Type, Union
 
 import attr
 from fastapi import APIRouter, FastAPI
-from starlette.responses import JSONResponse, Response
 from pydantic import BaseModel
-
-from stac_fastapi.types.extension import ApiExtension
 from stac_fastapi.api.models import APIRequest
+from stac_fastapi.api.routes import create_async_endpoint
 from stac_fastapi.types.config import ApiSettings
-from stac_fastapi.api.routes import create_async_endpoint, create_sync_endpoint
+from stac_fastapi.types.extension import ApiExtension
+from starlette.responses import JSONResponse, Response
 
-from .types import Asset, AssetCollection, AssetSearchGetRequest, AssetSearchPostRequest, GetAssetsRequest, GetAssetRequest
-from .client import BaseAssetSearchClient, AsyncBaseAssetSearchClient
+from .client import AsyncBaseAssetSearchClient, BaseAssetSearchClient
+from .types import (
+    Asset,
+    AssetCollection,
+    AssetSearchGetRequest,
+    AssetSearchPostRequest,
+    GetAssetRequest,
+    GetAssetsRequest,
+)
 
-CONFORMANCE_CLASSES = [
-    'https://api.stacspec.org/v1.0.0-beta.2/asset-search'
-]
+CONFORMANCE_CLASSES = ["https://api.stacspec.org/v1.0.0-beta.2/asset-search"]
 
 
 @attr.s
@@ -43,11 +47,11 @@ class AssetSearchExtension(ApiExtension):
                                     for the extension.
     """
 
-    client: Union[AsyncBaseAssetSearchClient, BaseAssetSearchClient] = attr.ib(default = None)
-    settings: ApiSettings = attr.ib(default = None)
-    conformance_classes: List[str] = attr.ib(
-        default=CONFORMANCE_CLASSES
+    client: Union[AsyncBaseAssetSearchClient, BaseAssetSearchClient] = attr.ib(
+        default=None
     )
+    settings: ApiSettings = attr.ib(default=None)
+    conformance_classes: List[str] = attr.ib(default=CONFORMANCE_CLASSES)
     router: APIRouter = attr.ib(factory=APIRouter)
     response_class: Type[Response] = attr.ib(default=JSONResponse)
     extensions: List[ApiExtension] = attr.ib(default=attr.Factory(list))
@@ -57,22 +61,6 @@ class AssetSearchExtension(ApiExtension):
     asset_search_post_request_model: Type[AssetSearchPostRequest] = attr.ib(
         default=AssetSearchPostRequest
     )
-
-    def _create_endpoint(
-        self,
-        func: Callable,
-        request_type: Union[Type[APIRequest], Type[BaseModel],],
-    ) -> Callable:
-        """Create a FastAPI endpoint."""
-        if isinstance(self.client, AsyncBaseAssetSearchClient):
-            return create_async_endpoint(
-                func, request_type, response_class=self.response_class
-            )
-        elif isinstance(self.client, BaseAssetSearchClient):
-            return create_sync_endpoint(
-                func, request_type, response_class=self.response_class
-            )
-        raise 
 
     def register_get_asset_search(self):
         """Register asset search endpoint (GET /asset/search).
@@ -89,7 +77,11 @@ class AssetSearchExtension(ApiExtension):
             response_model_exclude_unset=True,
             response_model_exclude_none=True,
             methods=["GET"],
-            endpoint=self._create_endpoint(self.client.get_asset_search, self.asset_search_get_request_model),
+            endpoint=create_async_endpoint(
+                self.client.get_asset_search,
+                self.asset_search_get_request_model,
+                self.response_class,
+            ),
         )
 
     def register_post_asset_search(self):
@@ -107,9 +99,13 @@ class AssetSearchExtension(ApiExtension):
             response_model_exclude_unset=True,
             response_model_exclude_none=True,
             methods=["POST"],
-            endpoint=self._create_endpoint(self.client.post_asset_search, self.asset_search_post_request_model),
+            endpoint=create_async_endpoint(
+                self.client.post_asset_search,
+                self.asset_search_post_request_model,
+                self.response_class,
+            ),
         )
-    
+
     def register_get_assets(self):
         """Register asset search endpoint (GET /collection/{collection_id}/items/{item_id}/assets).
         Returns:
@@ -125,9 +121,11 @@ class AssetSearchExtension(ApiExtension):
             response_model_exclude_unset=True,
             response_model_exclude_none=True,
             methods=["GET"],
-            endpoint=self._create_endpoint(self.client.get_assets, GetAssetsRequest),
+            endpoint=create_async_endpoint(
+                self.client.get_assets, GetAssetsRequest, self.response_class
+            ),
         )
-    
+
     def register_get_asset(self):
         """Register asset search endpoint (GET /collection/{collection_id}/items/{item_id}/assets/{asset_id}).
         Returns:
@@ -143,7 +141,9 @@ class AssetSearchExtension(ApiExtension):
             response_model_exclude_unset=True,
             response_model_exclude_none=True,
             methods=["GET"],
-            endpoint=self._create_endpoint(self.client.get_asset, GetAssetRequest),
+            endpoint=create_async_endpoint(
+                self.client.get_asset, GetAssetRequest, self.response_class
+            ),
         )
 
     def register(self, app: FastAPI) -> None:
